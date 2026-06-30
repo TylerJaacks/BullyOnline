@@ -9,7 +9,7 @@ WORKDIR /server
 COPY derpy_script_server ./
 RUN chmod +x derpy_script_server
 
-COPY dslconfig.ini ./
+COPY sample.dslconfig.ini ./dslconfig.ini
 COPY eula.txt ./
 COPY credits.html ./
 COPY scripts/ ./scripts/
