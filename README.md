@@ -51,10 +51,12 @@ The server listens on port **17017** (TCP) by default. Make sure this port is op
 
 ## Updating Configuration
 
-`dslconfig.ini` is bind-mounted from the host, so changes take effect with a restart — no rebuild needed:
+Copy the config out of the running container, edit it, copy it back, then restart:
 
 ```powershell
-# Edit dslconfig.ini, then:
+docker cp bully-online:/server/dslconfig.ini ./dslconfig.ini
+# Edit dslconfig.ini
+docker cp ./dslconfig.ini bully-online:/server/dslconfig.ini
 docker compose restart
 ```
 
