@@ -6,9 +6,8 @@ A Dockerized hosting setup for **Bully Online**, a multiplayer mod for Bully: Sc
 
 ---
 
-## Prerequisites
+## Prerequisites for Users
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - A copy of Bully: Scholarship Edition (PC) with [derpy's script loader (DSL)](https://www.nexusmods.com/bully) installed (for connecting as a player)
 
 ---
