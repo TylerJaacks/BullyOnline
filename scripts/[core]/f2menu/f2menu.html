@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<title>F2 Menu</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<style>
+			:root{
+				--accent-color: #DF60DF;
+				color-scheme: dark;
+				background-color: #080808;
+				color: #F0F0F0;
+				font-family: Helvetica, Arial, sans-serif;
+				max-width: 70rem;
+				margin: auto;
+				overflow-wrap: anywhere;
+			}
+			body{
+				background-color: #101010;
+				border: 2px solid var(--accent-color);
+				border-radius: 2rem;
+				padding: 1rem;
+			}
+			div{
+				margin-left: 1rem;
+				margin-right: 1rem;
+			}
+			hr{
+				border-color: var(--accent-color);
+			}
+			h1,h2,h3,h4,h5,h6,th,b{
+				color: var(--accent-color);
+				font-family: Georgia;
+				font-weight: bold;
+			}
+			code{
+				background-color: #202020;
+				color: #FFFFFF;
+				font-family: Cascadia Mono, monospace;
+			}
+			.script{
+				display: block;
+				border-radius: 1rem;
+				margin-bottom: 1rem;
+				padding: 0.5rem;
+				tab-size: 2;
+				white-space: pre-wrap;
+				overflow-wrap: normal;
+				overflow: auto;
+			}
+			table{
+				border: 1px solid var(--accent-color);
+				border-radius: 1rem;
+				margin-bottom: 1rem;
+				padding: 0.5rem;
+			}
+		</style>
+	</head>
+	<body>
+		<h1 style="text-align: center">F2 Menu (for derpy's script server)</h1>
+		<hr/>
+		<h2>Thanks for downloading!</h2>
+		<div>
+			<p>
+				Thanks for using F2 menu! As a server owner, this mod should simply work out of the box for you.
+				Just make sure that you <b>keep the folder name as "f2menu"</b> when you install it,
+				as that's what other mods will expect when listing it as a dependency.
+			</p>
+			<p>
+				Also be sure to <b>check out config.ini</b> to change the menu text, key bind, or menu order.
+			</p>
+		</div>
+		<hr/>
+		<h2>Scripting for F2 menu.</h2>
+		<div>
+			<p>
+				Do you want to make your mod work with f2menu?
+				Well, integrating with it is as simple as handling the <b>f2menu:Open</b> event.
+				This event passes a single function for you to call to add to the menu, and it <b>runs each time
+				the menu is opened</b> so you won't have to worry about your menu option being missed.
+				The function takes a single table with information about the menu option and what to do when it is selected.
+			</p>
+			<code class="script">-- simple f2menu example
+
+RegisterLocalEventHandler("f2menu:Open", function(f_add)
+	f_add({name = "Give Money", func = function()
+		PlayerAddMoney(10000)
+	end})
+end)</code>
+			<p>
+				In the above example, you can see the most basic way to add an option by specifying a callback for <b>"func"</b>.
+				However, most the time you'll want more than a single option.
+				The <b>preferable way</b> to use f2menu is to actually <b>add your own sub-menus</b> that your script controls.
+				We can do this by instead specifying a <b>"thread"</b> that will be run when the option is selected.
+				You can do this by <b>assigning a function to the "thread"</b> field, and that function will be used to create a thread.
+				The <b>thread will be passed</b> the <b>parent menu</b> and the <b>option table</b>.
+				You should usually <b>use the parent to make a submenu</b> so that the menu's visual settings are preserved.
+			</p>
+			<p>
+				When creating a thread like that, you'll have the freedom to make your menu however you like.
+				Usually this will involve you <b>using the utility/menu package</b>, but you can script your menu however you like.
+				Since f2menu has already loaded the package and will be passing your thread a parent menu to work off of, it's not
+				necessary to require the package again.
+			</p>
+			<code class="script">-- advanced f2menu example
+
+RegisterLocalEventHandler("f2menu:Open", function(f_add)
+	f_add({
+		name = "Sub Menu Example",
+		description = "Open the example menu.",
+		thread = M_ExampleMenu,
+	})
+end)
+
+function M_ExampleMenu(parent, selected)
+	local menu = parent:submenu(selected.name, "This is an example sub-menu for f2menu.")
+	while menu:active() do
+		if menu:option("Give Money") then
+			PlayerAddMoney(10000)
+		elseif menu:option("Give Up") then
+			PedSetActionNode(gPlayer, "/G/HITTREE/STANDING/POSTHIT/STANDING/DEAD/COLLAPSE/COLLAPSE_B", "")
+			PlayerSetHealth(0)
+		end
+		menu:draw()
+		Wait(0)
+	end
+end</code>
+			<p>
+				One last example I'd like to cover is in the case of giving your options some sort of state.
+				Of course, you can use global variables for all your options if you want. But sometimes it's a lot <b>neater
+				to keep things packed in option tables</b>, which is what you can do as long as you make sure your option table
+				isn't re-created every time we handle the <b>f2menu:Open</b> event.
+				If your option doesn't require persistent state though, remember it is perfectly okay to re-create the table every time
+				like I've been showing in the examples up to this point.
+			</p>
+			<code class="script">-- persistent option f2menu example
+require("utility/menu")
+
+gOptions = {
+	-- important we make the option tables *once* so their state is preserved
+	{
+		name = "Disable Punishment System",
+		description = "Turn the punishment system on or off.",
+		right = "[OFF]",
+		disable_punishment = false, -- this option isn't used by f2menu, it's entirely custom
+		func = function(option)
+			option.disable_punishment = not option.disable_punishment
+			option.right = option.disable_punishment and "[ON]" or "[OFF]"
+			DisablePunishmentSystem(option.disable_punishment)
+		end,
+	},
+}
+
+RegisterLocalEventHandler("f2menu:Open", function(f_add)
+	for _, option in ipairs(gOptions) do
+		f_add(option) -- add each option table
+	end
+end)</code>
+		</div>
+		<hr/>
+		<h2>Event Specification</h2>
+		<div>
+			<p>
+				Here's a list of every event that can be triggered by f2menu.
+			</p>
+			<h3>"f2menu:Open"</h3>
+			<div>
+				<p>
+					Triggered on the client when the player opens their f2menu, so that other scripts can add menu options.
+				</p>
+				<p>
+					It <b>passes 1 argument</b>, a function to add an option to f2menu.
+					The function should be called for each option you want to add to / keep in the menu, and only be called during the event.
+					If <b>any callback returns true, the menu will not open</b>.
+					You can do this to prevent the menu from opening during times you want the menu disabled.
+				</p>
+			</div>
+			<h3>"f2menu:Close"</h3>
+			<div>
+				<p>
+					Triggered on the client when the player closes their f2menu.
+					It <b>passes nothing</b> and <b>discards the results</b> of every callback.
+				</p>
+			</div>
+			<h3>"f2menu:Shutdown"</h3>
+			<div>
+				<p>
+					Triggered when the f2menu shuts down. This is a good time to perform any emergency cleanup.
+					It <b>passes nothing</b> and <b>discards the results</b> of every callback.
+					The <b>"f2menu:Close"</b> event is also triggered right before this if the menu was open.
+				</p>
+			</div>
+		</div>
+		<hr/>
+		<h2>Shared Function Specification</h2>
+		<div>
+			<p>
+				Here's a list of every shared function that you can use with the global <b>dsl</b> table.
+			</p>
+			<h3>dsl.f2menu.IsOpen()</h3>
+			<div>
+				<p>
+					Returns <b>true</b> if the menu is currently open.
+				</p>
+			</div>
+			<h3>dsl.f2menu.Close()</h3>
+			<div>
+				<p>
+					Instantly <b>closes the menu</b> if it is open.
+				</p>
+			</div>
+		</div>
+		<hr/>
+		<h2>Option Table Specification</h2>
+		<div>
+			<p>
+				Here's a list of every field you can put in your option tables when you add options
+				during <b>f2menu:Open</b>. All fields are optional.
+			</p>
+			<p>
+				All fields designated as <b>"menu text"</b> are passed directly to the menu system (provided by <b>utility/menu</b>).
+				These fields are only used <b>if not nil</b>, except for <b>"name"</b> which is <b>always used</b>.
+				The menu system then passes them directly to the <b>MeasureText</b> and <b>DrawText</b> functions when needed,
+				which means they'll be converted to strings using <b>tostring</b> if necessary as those functions are designed to do.
+				This means you can give any type of value you want and rely on it being converted.
+			</p>
+			<h3>"name"</h3>
+			<div>
+				<p>
+					The <b>menu text</b> that's used as the option's name.
+				</p>
+			</div>
+			<h3>"right"</h3>
+			<div>
+				<p>
+					The <b>menu text</b> that shows up to the right of the option's name.
+				</p>
+			</div>
+			<h3>"description"</h3>
+			<div>
+				<p>
+					The <b>menu text</b> that shows up in the description box when a menu alert isn't active.
+				</p>
+			</div>
+			<h3>"priority"</h3>
+			<div>
+				<p>
+					Options with a <b>higher priority are placed higher</b> in the menu than options with a low priority.
+					The <b>default priority is 0</b>. It is also worth noting that any options with the
+					same priority are sorted by name (case-insensitive).
+				</p>
+				<p>
+					For more control over the order of menu items, see config.ini.
+					If the name of a menu item is set using "menu_order", it will *always* show up in front of options that weren't.
+				</p>
+			</div>
+			<h3>"func"</h3>
+			<div>
+				<p>
+					A <b>function</b> to be called synchronously when the option is selected.
+					It cannot yield (wait), as it's not a thread.
+				</p>
+				<p>
+					It is <b>passed 1 argument</b>, the option table that was just selected.
+					It is worth noting that this table is the <b>exact same value that was added</b> during the <b>f2menu:Open</b> event,
+					not any form of copy. No return value is expected, and any <b>results will be discarded</b>.
+				</p>
+			</div>
+			<h3>"thread"</h3>
+			<div>
+				<p>
+					A <b>function</b> to be run in a thread when the option is selected.
+					This thread is <b>attached to the script that added the option</b>, which means it will run as if it were
+					just created by that script in the first place rather than by the f2menu's script.
+				</p>
+				<p>
+					It is <b>passed 2 arguments</b>, the parent menu object and the option table that was just selected.
+					You should use the parent menu object to create a sub-menu (by using <code>parent:submenu(...)</code>) instead
+					of creating a new menu, unless you feel it's necessary to create a new menu or discard the visual style of f2menu.
+					No return value is expected, and any <b>results will be discarded</b>.
+				</p>
+				<p>
+					Although the thread belongs to your script, it is <b>only run when the menu isn't hidden</b>.
+					Since players can hide the menu at any point, this means your thread could be suspended for longer than
+					you intended if you call Wait.
+				</p>
+				<p>
+					The thread is created as a <b>"PRE_GAME"</b> thread, which means it runs before all normal <b>"GAME"</b> threads.
+					This is important because it gurantees that it will run before the f2menu's controlling thread.
+				</p>
+			</div>
+		</div>
+	</body>
+</html>

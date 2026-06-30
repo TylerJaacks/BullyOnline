@@ -1,0 +1,57 @@
+gary: hours 30
+gary/ween: can only be bought during Halloween event
+peter: hours 30
+peter/ween: can only be bought during Halloween event
+peter/nutcrack: can only be bought during Christmas event
+pedro/ween: can only be bought during Halloween event
+pedro/nutcrack: can only be bought during Christmas event
+constantinos/underwear: rw_kills 50
+trevor/ween: can only be bought during Halloween event
+eunice/nutcrack: can only be bought during Christmas event
+melody/nutcrack: can only be bought during Christmas event
+gordon/ween: can only be bought during Halloween event
+angie/ween: can only be bought during Halloween event
+earnest: hours 20
+earnest/eg: fight_as_char 2000
+fatty/ween: can only be bought during Halloween event
+thad/ween: can only be bought during Halloween event
+donald/ween: can only be bought during Halloween event
+russell: hours 20
+russell/eg: fight_as_char 2000
+troy/ween: can only be bought during Halloween event
+ted: hours 20
+ted/football: race_wins 50
+ted/eg: fight_as_char 2000
+mandy/towel: rw_kills 100
+damon/football: race_wins 50
+damon/ween: can only be bought during Halloween event
+kirby/football: race_wins 50
+dan/football: race_wins 50
+casey/ween: can only be bought during Halloween event
+casey/football: race_wins 50
+bo/football: race_wins 50
+johnny: hours 20
+johnny/eg: fight_as_char 2000
+lucky/ween: can only be bought during Halloween event
+vance/ween: can only be bought during Halloween event
+darby: hours 20
+darby/eg: fight_as_char 2000
+pinky/ween: can only be bought during Halloween event
+chad/boxing1: rw_specific library
+chad/boxing2: rw_specific library
+chad/boxing3: rw_specific library
+bif/boxing1: rw_specific warehouse
+bif/boxing2: rw_specific warehouse
+bif/boxing3: rw_specific warehouse
+justin/boxing1: rw_specific hattrick_manor
+justin/boxing2: rw_specific hattrick_manor
+justin/boxing3: rw_specific hattrick_manor
+bryce/boxing1: rw_specific the_tenements
+bryce/boxing2: rw_specific the_tenements
+bryce/boxing3: rw_specific the_tenements
+parker/boxing1: rw_specific happy_volts_asylum
+parker/boxing2: rw_specific happy_volts_asylum
+parker/boxing3: rw_specific happy_volts_asylum
+parker/ween: can only be bought during Halloween event
+edgar: hours 20
+edgar/eg: fight_as_char 2000

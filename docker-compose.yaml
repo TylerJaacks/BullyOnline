@@ -1,0 +1,11 @@
+services:
+  bully-online:
+    build: .
+    container_name: bully-online
+    restart: unless-stopped
+    ports:
+      - "17017:17017"
+    volumes:
+      - ./dslconfig.ini:/server/dslconfig.ini
+    stdin_open: true
+    tty: true
